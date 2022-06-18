@@ -251,6 +251,13 @@ public:
         return *this;
     }
 
+    Packet& float64(double arg)
+    {
+        m_tags.putChar('d');
+        m_args.putFloat64(arg);
+        return *this;
+    }
+
     Packet& string(const char* arg)
     {
         m_tags.putChar('s');

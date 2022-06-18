@@ -70,6 +70,10 @@ constexpr size_t float32()
 {
     return 1;
 }
+constexpr size_t float64()
+{
+    return 1;
+}
 constexpr size_t string()
 {
     return 1;

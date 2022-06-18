@@ -65,6 +65,7 @@ public:
     {
         kInt32,
         kFloat32,
+        kFloat64,
         kString,
         kBlob,
         kArray,
@@ -316,6 +317,40 @@ private:
     float m_value;
 };
 
+class Float64 : public Argument
+{
+public:
+    Float64(double value)
+    : Argument(kFloat64)
+    , m_value(value)
+    {}
+
+    void print(std::ostream& out) const override
+    {
+        out << "d:" << m_value;
+    }
+
+    void put(OSCPP::Client::Packet& packet) const override
+    {
+        packet.put(m_value);
+    }
+
+    size_t size() const override
+    {
+        return OSCPP::Size::float64();
+    }
+
+protected:
+    bool equals(const Argument& other) const override
+    {
+        return dynamic_cast<const Float64&>(other).m_value == m_value;
+    }
+
+private:
+    double m_value;
+};
+
+
 class String : public Argument
 {
 public:
@@ -471,6 +506,9 @@ void Packet::parseArgs(OSCPP::Server::ArgStream& inArgs,
             case 'f':
                 outArgs.push_back(std::make_shared<Float32>(inArgs.float32()));
                 break;
+            case 'd':
+                outArgs.push_back(std::make_shared<Float64>(inArgs.float64()));
+                break;
             case 's':
                 outArgs.push_back(std::make_shared<String>(inArgs.string()));
                 break;
@@ -536,6 +574,9 @@ struct MessageArgGen
             case AST::Argument::kFloat32:
                 return std::make_shared<AST::Float32>(
                     ac::generator<float>()(size));
+            case AST::Argument::kFloat64:
+                return std::make_shared<AST::Float64>(
+                    ac::generator<double>()(size));
             case AST::Argument::kString:
                 return std::make_shared<AST::String>(
                     ac::string<ac::ccPrintable>()(std::max<size_t>(1, size)));
